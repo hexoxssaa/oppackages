@@ -931,6 +931,18 @@ get_current_ip () {
 			network_flush_cache	# force re-read data from ubus
 			[ $use_ipv6 -eq 0 ] && __RUNPROG="network_get_ipaddr" \
 					    || __RUNPROG="network_get_ipaddr6"
+	 		if [ "$__RUNPROG" = "network_get_ipaddr6" ]; then
+    				eval "$__RUNPROG __DATA $ip_network"
+				if [ $? -ne 0 ]; then
+    					sleep 5
+	 				eval "$__RUNPROG __DATA $ip_network"
+    				fi
+				if [ $? -ne 0 ]; then
+    					sleep 10
+	 				eval "$__RUNPROG __DATA $ip_network" || \
+						write_log 13 "Can not detect current IP using $__RUNPROG '$ip_network' - Error: '$?'"
+    				fi
+    			fi
 			eval "$__RUNPROG __DATA $ip_network" || \
 				write_log 13 "Can not detect current IP using $__RUNPROG '$ip_network' - Error: '$?'"
 			[ -n "$__DATA" ] && write_log 7 "Current IP '$__DATA' detected on network '$ip_network'"
