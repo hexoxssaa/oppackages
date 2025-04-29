@@ -939,9 +939,11 @@ get_current_ip () {
     				fi
 				if [ $? -ne 0 ]; then
     					sleep 10
-	 				eval "$__RUNPROG __DATA $ip_network" || \
-						write_log 13 "Can not detect current IP using $__RUNPROG '$ip_network' - Error: '$?'"
+	 				eval "$__RUNPROG __DATA $ip_network"
     				fi
+				if [ $? -ne 0 ]; then
+					write_log 13 "Can not detect current IP using $__RUNPROG '$ip_network' - Error: '$?'"
+     				fi
     			fi
 			eval "$__RUNPROG __DATA $ip_network" || \
 				write_log 13 "Can not detect current IP using $__RUNPROG '$ip_network' - Error: '$?'"
